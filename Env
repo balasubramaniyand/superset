@@ -1,26 +1,9 @@
-# Database configurations
-DATABASE_DB=superset
-DATABASE_HOST=db
-DATABASE_PASSWORD=superset
-DATABASE_USER=superset
-DATABASE_PORT=5432
-DATABASE_DIALECT=postgresql
+balasubramaniyand@CHNIOPEXL5097:~/superset/docker$ cd ..
+balasubramaniyand@CHNIOPEXL5097:~/superset$ sudo docker-compose -f docker-compose-image-tag.yml up -d
+ERROR: The Compose file './docker-compose-image-tag.yml' is invalid because:
+services.db.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-init.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-worker.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-worker-beat.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
 
-# PostgreSQL-specific variables
-POSTGRES_DB=superset
-POSTGRES_USER=superset
-POSTGRES_PASSWORD=superset
-
-# Redis configurations
-REDIS_HOST=redis
-REDIS_PORT=6379
-
-# Superset configurations
-FLASK_ENV=production
-SUPERSET_ENV=production
-SUPERSET_LOAD_EXAMPLES=yes
-CYPRESS_CONFIG=false
-SUPERSET_PORT=8088
-
-# Python path
-PYTHONPATH=/app/pythonpath:/app/docker/pythonpath_dev
