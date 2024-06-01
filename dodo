@@ -1,92 +1,615 @@
-x-superset-image: &superset-image iopexlabs/superset:1.2
-x-superset-depends-on: &superset-depends-on
-  - db
-  - redis
-x-superset-volumes: &superset-volumes
-  # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
-  - ./docker:/app/docker
-  - ./home:/app/superset_home
-  - ./pythonpath:/app/pythonpath
+uperset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:34:53 +0000] [375] [INFO] Worker exiting (pid: 375)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:34:53 +0000] [384] [INFO] Booting worker with pid: 384
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_init           | Installing local overrides at /app/docker/requirements-local.txt
+superset_init           | Collecting flask-oidc==1.3.0
+superset_init           |   Downloading flask-oidc-1.3.0.tar.gz (29 kB)
+superset_init           |   Preparing metadata (setup.py): started
+superset_init           |   Preparing metadata (setup.py): finished with status 'done'
+superset_init           | Collecting psycopg2
+superset_init           |   Downloading psycopg2-2.9.9.tar.gz (384 kB)
+superset_init           |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 384.9/384.9 KB 1.3 MB/s eta 0:00:00
+superset_init           |   Preparing metadata (setup.py): started
+superset_init           |   Preparing metadata (setup.py): finished with status 'done'
+superset_init           | Requirement already satisfied: Flask in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.3)
+superset_init           | Requirement already satisfied: itsdangerous in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_init           | Collecting oauth2client
+superset_init           |   Downloading oauth2client-4.1.3-py2.py3-none-any.whl (98 kB)
+superset_init           |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 98.2/98.2 KB 1.7 MB/s eta 0:00:00
+superset_init           | Requirement already satisfied: six in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (1.16.0)
+superset_init           | Requirement already satisfied: click>=8.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (8.0.4)
+superset_init           | Requirement already satisfied: importlib-metadata>=3.6.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (6.8.0)
+superset_init           | Requirement already satisfied: Werkzeug>=2.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.2)
+superset_init           | Requirement already satisfied: Jinja2>=3.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.3)
+superset_init           | Collecting pyasn1-modules>=0.0.5
+superset_init           |   Downloading pyasn1_modules-0.4.0-py3-none-any.whl (181 kB)
+superset_init           |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 181.2/181.2 KB 2.6 MB/s eta 0:00:00
+superset_init           | Collecting rsa>=3.1.4
+superset_init           |   Downloading rsa-4.9-py3-none-any.whl (34 kB)
+superset_init           | Collecting pyasn1>=0.1.7
+superset_init           |   Downloading pyasn1-0.6.0-py2.py3-none-any.whl (85 kB)
+superset_init           |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.3/85.3 KB 2.6 MB/s eta 0:00:00
+superset_init           | Collecting httplib2>=0.9.1
+superset_init           |   Downloading httplib2-0.22.0-py3-none-any.whl (96 kB)
+superset_init           |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 96.9/96.9 KB 2.0 MB/s eta 0:00:00
+superset_init           | Requirement already satisfied: pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2 in /usr/local/lib/python3.8/site-packages (from httplib2>=0.9.1->oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.6)
+superset_init           | Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.8/site-packages (from importlib-metadata>=3.6.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.16.2)
+superset_init           | Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.8/site-packages (from Jinja2>=3.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_init           | Building wheels for collected packages: flask-oidc, psycopg2
+superset_init           |   Building wheel for flask-oidc (setup.py): started
+superset_init           |   Building wheel for flask-oidc (setup.py): finished with status 'done'
+superset_init           |   Created wheel for flask-oidc: filename=flask_oidc-1.3.0-py2.py3-none-any.whl size=17190 sha256=dd7f69f9b09d771711ba12e42a47511ac63a6ee0299d73d1823fabcff4572af8
+superset_init           |   Stored in directory: /root/.cache/pip/wheels/db/b6/13/1a8597c4b0687cc46c2f48a81e5921b7d670bd1e9e69db9b14
+superset_init           |   Building wheel for psycopg2 (setup.py): started
+superset_init           |   Building wheel for psycopg2 (setup.py): finished with status 'done'
+superset_init           |   Created wheel for psycopg2: filename=psycopg2-2.9.9-cp38-cp38-linux_x86_64.whl size=477387 sha256=4fd040dcedbfe119b85e32f92614ce6c0f1e909b34fecbbfdfe24f78a11364bd
+superset_init           |   Stored in directory: /root/.cache/pip/wheels/ad/76/94/83d0d344d36a4d846bda734160afb35b919852ca8afa53c5b9
+superset_init           | Successfully built flask-oidc psycopg2
+superset_init           | Installing collected packages: pyasn1, psycopg2, httplib2, rsa, pyasn1-modules, oauth2client, flask-oidc
+superset_init           | Successfully installed flask-oidc-1.3.0 httplib2-0.22.0 oauth2client-4.1.3 psycopg2-2.9.9 pyasn1-0.6.0 pyasn1-modules-0.4.0 rsa-4.9
+superset_init           | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+superset_init           | WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+superset_init           | You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+superset_init           | 
+superset_init           | ######################################################################
+superset_init           | 
+superset_init           | 
+superset_init           | Init Step 1/4 [Starting] -- Applying DB migrations
+superset_init           | 
+superset_init           | 
+superset_init           | ######################################################################
+superset_init           | 
+superset_init           | --------------------------------------------------------------------------------
+superset_init           |                                     WARNING
+superset_init           | --------------------------------------------------------------------------------
+superset_init           | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_init           | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_init           | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_init           | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_init           | --------------------------------------------------------------------------------
+superset_init           | --------------------------------------------------------------------------------
+superset_init           | Refusing to start due to insecure SECRET_KEY
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:34:55 +0000] [384] [INFO] Worker exiting (pid: 384)
+superset_app            | [2024-06-01 20:34:55 +0000] [393] [INFO] Booting worker with pid: 393
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:34:56 +0000] [393] [INFO] Worker exiting (pid: 393)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:34:57 +0000] [402] [INFO] Booting worker with pid: 402
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:34:58 +0000] [402] [INFO] Worker exiting (pid: 402)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:34:58 +0000] [411] [INFO] Booting worker with pid: 411
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:34:59 +0000] [411] [INFO] Worker exiting (pid: 411)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:00 +0000] [420] [INFO] Booting worker with pid: 420
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:01 +0000] [420] [INFO] Worker exiting (pid: 420)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:01 +0000] [429] [INFO] Booting worker with pid: 429
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:02 +0000] [429] [INFO] Worker exiting (pid: 429)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:02 +0000] [438] [INFO] Booting worker with pid: 438
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:03 +0000] [438] [INFO] Worker exiting (pid: 438)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:03 +0000] [447] [INFO] Booting worker with pid: 447
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:05 +0000] [447] [INFO] Worker exiting (pid: 447)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:05 +0000] [456] [INFO] Booting worker with pid: 456
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_worker_beat    | Installing local overrides at /app/docker/requirements-local.txt
+superset_worker_beat    | Collecting flask-oidc==1.3.0
+superset_worker_beat    |   Downloading flask-oidc-1.3.0.tar.gz (29 kB)
+superset_worker_beat    |   Preparing metadata (setup.py): started
+superset_worker_beat    |   Preparing metadata (setup.py): finished with status 'done'
+superset_worker_beat    | Collecting psycopg2
+superset_worker_beat    |   Downloading psycopg2-2.9.9.tar.gz (384 kB)
+superset_worker_beat    |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 384.9/384.9 KB 878.6 kB/s eta 0:00:00
+superset_worker_beat    |   Preparing metadata (setup.py): started
+superset_worker_beat    |   Preparing metadata (setup.py): finished with status 'done'
+superset_worker_beat    | Requirement already satisfied: Flask in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.3)
+superset_worker_beat    | Requirement already satisfied: itsdangerous in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | Collecting oauth2client
+superset_worker_beat    |   Downloading oauth2client-4.1.3-py2.py3-none-any.whl (98 kB)
+superset_worker_beat    |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 98.2/98.2 KB 731.4 kB/s eta 0:00:00
+superset_worker_beat    | Requirement already satisfied: six in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (1.16.0)
+superset_worker_beat    | Requirement already satisfied: click>=8.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (8.0.4)
+superset_worker_beat    | Requirement already satisfied: Werkzeug>=2.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.2)
+superset_worker_beat    | Requirement already satisfied: importlib-metadata>=3.6.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (6.8.0)
+superset_worker_beat    | Requirement already satisfied: Jinja2>=3.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.3)
+superset_worker_beat    | Collecting pyasn1>=0.1.7
+superset_worker_beat    |   Downloading pyasn1-0.6.0-py2.py3-none-any.whl (85 kB)
+superset_worker_beat    |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.3/85.3 KB 752.2 kB/s eta 0:00:00
+superset_worker_beat    | Collecting rsa>=3.1.4
+superset_worker_beat    |   Downloading rsa-4.9-py3-none-any.whl (34 kB)
+superset_worker_beat    | Collecting httplib2>=0.9.1
+superset_worker_beat    |   Downloading httplib2-0.22.0-py3-none-any.whl (96 kB)
+superset_worker_beat    |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 96.9/96.9 KB 767.7 kB/s eta 0:00:00
+superset_worker_beat    | Collecting pyasn1-modules>=0.0.5
+superset_worker_beat    |   Downloading pyasn1_modules-0.4.0-py3-none-any.whl (181 kB)
+superset_worker_beat    |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 181.2/181.2 KB 1.5 MB/s eta 0:00:00
+superset_worker_beat    | Requirement already satisfied: pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2 in /usr/local/lib/python3.8/site-packages (from httplib2>=0.9.1->oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.6)
+superset_worker_beat    | Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.8/site-packages (from importlib-metadata>=3.6.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.16.2)
+superset_worker_beat    | Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.8/site-packages (from Jinja2>=3.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | Building wheels for collected packages: flask-oidc, psycopg2
+superset_worker_beat    |   Building wheel for flask-oidc (setup.py): started
+superset_worker_beat    |   Building wheel for flask-oidc (setup.py): finished with status 'done'
+superset_worker_beat    |   Created wheel for flask-oidc: filename=flask_oidc-1.3.0-py2.py3-none-any.whl size=17190 sha256=dd7f69f9b09d771711ba12e42a47511ac63a6ee0299d73d1823fabcff4572af8
+superset_worker_beat    |   Stored in directory: /root/.cache/pip/wheels/db/b6/13/1a8597c4b0687cc46c2f48a81e5921b7d670bd1e9e69db9b14
+superset_worker_beat    |   Building wheel for psycopg2 (setup.py): started
+superset_worker_beat    |   Building wheel for psycopg2 (setup.py): finished with status 'done'
+superset_worker_beat    |   Created wheel for psycopg2: filename=psycopg2-2.9.9-cp38-cp38-linux_x86_64.whl size=477442 sha256=8f4bdc4195eae1de77ccbf51a8db62cb497dfbcb72a40738a2bd7bc8793c110a
+superset_worker_beat    |   Stored in directory: /root/.cache/pip/wheels/ad/76/94/83d0d344d36a4d846bda734160afb35b919852ca8afa53c5b9
+superset_worker_beat    | Successfully built flask-oidc psycopg2
+superset_worker_beat    | Installing collected packages: pyasn1, psycopg2, httplib2, rsa, pyasn1-modules, oauth2client, flask-oidc
+superset_worker_beat    | Successfully installed flask-oidc-1.3.0 httplib2-0.22.0 oauth2client-4.1.3 psycopg2-2.9.9 pyasn1-0.6.0 pyasn1-modules-0.4.0 rsa-4.9
+superset_worker_beat    | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+superset_worker_beat    | WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+superset_worker_beat    | You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    |                                     WARNING
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_worker_beat    | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_worker_beat    | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | Refusing to start due to insecure SECRET_KEY
+superset_worker_beat    | Installing local overrides at /app/docker/requirements-local.txt
+superset_worker_beat    | Requirement already satisfied: flask-oidc==1.3.0 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 1)) (1.3.0)
+superset_worker_beat    | Requirement already satisfied: psycopg2 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 2)) (2.9.9)
+superset_worker_beat    | Requirement already satisfied: oauth2client in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.1.3)
+superset_worker_beat    | Requirement already satisfied: six in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (1.16.0)
+superset_worker_beat    | Requirement already satisfied: Flask in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.3)
+superset_worker_beat    | Requirement already satisfied: itsdangerous in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | Requirement already satisfied: Jinja2>=3.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.3)
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:06 +0000] [456] [INFO] Worker exiting (pid: 456)
+superset_app            | [2024-06-01 20:35:06 +0000] [465] [INFO] Booting worker with pid: 465
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:07 +0000] [465] [INFO] Worker exiting (pid: 465)
+superset_app            | [2024-06-01 20:35:07 +0000] [474] [INFO] Booting worker with pid: 474
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:08 +0000] [474] [INFO] Worker exiting (pid: 474)
+superset_app            | [2024-06-01 20:35:09 +0000] [483] [INFO] Booting worker with pid: 483
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:10 +0000] [483] [INFO] Worker exiting (pid: 483)
+superset_app            | [2024-06-01 20:35:10 +0000] [492] [INFO] Booting worker with pid: 492
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:11 +0000] [492] [INFO] Worker exiting (pid: 492)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:11 +0000] [501] [INFO] Booting worker with pid: 501
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:13 +0000] [501] [INFO] Worker exiting (pid: 501)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:13 +0000] [510] [INFO] Booting worker with pid: 510
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:14 +0000] [510] [INFO] Worker exiting (pid: 510)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:15 +0000] [519] [INFO] Booting worker with pid: 519
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:16 +0000] [519] [INFO] Worker exiting (pid: 519)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:16 +0000] [528] [INFO] Booting worker with pid: 528
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_worker         | Installing local overrides at /app/docker/requirements-local.txt
+superset_worker         | Collecting flask-oidc==1.3.0
+superset_worker         |   Downloading flask-oidc-1.3.0.tar.gz (29 kB)
+superset_worker         |   Preparing metadata (setup.py): started
+superset_worker         |   Preparing metadata (setup.py): finished with status 'done'
+superset_worker         | Collecting psycopg2
+superset_worker         |   Downloading psycopg2-2.9.9.tar.gz (384 kB)
+superset_worker         |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 384.9/384.9 KB 800.2 kB/s eta 0:00:00
+superset_worker         |   Preparing metadata (setup.py): started
+superset_worker         |   Preparing metadata (setup.py): finished with status 'done'
+superset_worker         | Requirement already satisfied: Flask in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.3)
+superset_worker         | Requirement already satisfied: itsdangerous in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker         | Collecting oauth2client
+superset_worker         |   Downloading oauth2client-4.1.3-py2.py3-none-any.whl (98 kB)
+superset_worker         |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 98.2/98.2 KB 813.8 kB/s eta 0:00:00
+superset_worker         | Requirement already satisfied: six in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (1.16.0)
+superset_worker         | Requirement already satisfied: click>=8.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (8.0.4)
+superset_worker         | Requirement already satisfied: importlib-metadata>=3.6.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (6.8.0)
+superset_worker         | Requirement already satisfied: Werkzeug>=2.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.2)
+superset_worker         | Requirement already satisfied: Jinja2>=3.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.3)
+superset_worker         | Collecting rsa>=3.1.4
+superset_worker         |   Downloading rsa-4.9-py3-none-any.whl (34 kB)
+superset_worker         | Collecting pyasn1>=0.1.7
+superset_worker         |   Downloading pyasn1-0.6.0-py2.py3-none-any.whl (85 kB)
+superset_worker         |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 85.3/85.3 KB 934.3 kB/s eta 0:00:00
+superset_worker         | Collecting httplib2>=0.9.1
+superset_worker         |   Downloading httplib2-0.22.0-py3-none-any.whl (96 kB)
+superset_worker         |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 96.9/96.9 KB 1.3 MB/s eta 0:00:00
+superset_worker         | Collecting pyasn1-modules>=0.0.5
+superset_worker         |   Downloading pyasn1_modules-0.4.0-py3-none-any.whl (181 kB)
+superset_worker         |      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 181.2/181.2 KB 735.6 kB/s eta 0:00:00
+superset_worker         | Requirement already satisfied: pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2 in /usr/local/lib/python3.8/site-packages (from httplib2>=0.9.1->oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.6)
+superset_worker         | Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.8/site-packages (from importlib-metadata>=3.6.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.16.2)
+superset_worker         | Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.8/site-packages (from Jinja2>=3.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker         | Building wheels for collected packages: flask-oidc, psycopg2
+superset_worker         |   Building wheel for flask-oidc (setup.py): started
+superset_worker         |   Building wheel for flask-oidc (setup.py): finished with status 'done'
+superset_worker         |   Created wheel for flask-oidc: filename=flask_oidc-1.3.0-py2.py3-none-any.whl size=17190 sha256=a48524ffc24e2317d67a719c7f376b6549b222c327a48192729e57345e5e0011
+superset_worker         |   Stored in directory: /root/.cache/pip/wheels/db/b6/13/1a8597c4b0687cc46c2f48a81e5921b7d670bd1e9e69db9b14
+superset_worker         |   Building wheel for psycopg2 (setup.py): started
+superset_worker         |   Building wheel for psycopg2 (setup.py): finished with status 'done'
+superset_worker         |   Created wheel for psycopg2: filename=psycopg2-2.9.9-cp38-cp38-linux_x86_64.whl size=477386 sha256=db754cfd077cd108e6fd82382055ae2c6792021b3c3d2c5f29de85717feb0d11
+superset_worker         |   Stored in directory: /root/.cache/pip/wheels/ad/76/94/83d0d344d36a4d846bda734160afb35b919852ca8afa53c5b9
+superset_worker         | Successfully built flask-oidc psycopg2
+superset_worker         | Installing collected packages: pyasn1, psycopg2, httplib2, rsa, pyasn1-modules, oauth2client, flask-oidc
+superset_worker         | Successfully installed flask-oidc-1.3.0 httplib2-0.22.0 oauth2client-4.1.3 psycopg2-2.9.9 pyasn1-0.6.0 pyasn1-modules-0.4.0 rsa-4.9
+superset_worker         | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+superset_worker         | WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+superset_worker         | You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+superset_worker         | Starting Celery worker...
+superset_worker         | --------------------------------------------------------------------------------
+superset_worker         |                                     WARNING
+superset_worker         | --------------------------------------------------------------------------------
+superset_worker         | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_worker         | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_worker         | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_worker         | --------------------------------------------------------------------------------
+superset_worker         | --------------------------------------------------------------------------------
+superset_worker         | Refusing to start due to insecure SECRET_KEY
+superset_worker         | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker         | Installing local overrides at /app/docker/requirements-local.txt
+superset_worker         | Requirement already satisfied: flask-oidc==1.3.0 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 1)) (1.3.0)
+superset_worker         | Requirement already satisfied: psycopg2 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 2)) (2.9.9)
+superset_worker         | Requirement already satisfied: Flask in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.3)
+superset_worker         | Requirement already satisfied: oauth2client in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.1.3)
+superset_worker         | Requirement already satisfied: six in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (1.16.0)
+superset_worker         | Requirement already satisfied: itsdangerous in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker         | Requirement already satisfied: Jinja2>=3.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.3)
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:17 +0000] [528] [INFO] Worker exiting (pid: 528)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:17 +0000] [537] [INFO] Booting worker with pid: 537
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:18 +0000] [537] [INFO] Worker exiting (pid: 537)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:18 +0000] [546] [INFO] Booting worker with pid: 546
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:19 +0000] [546] [INFO] Worker exiting (pid: 546)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:20 +0000] [555] [INFO] Booting worker with pid: 555
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:21 +0000] [555] [INFO] Worker exiting (pid: 555)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:21 +0000] [564] [INFO] Booting worker with pid: 564
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:22 +0000] [564] [INFO] Worker exiting (pid: 564)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:22 +0000] [573] [INFO] Booting worker with pid: 573
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:23 +0000] [573] [INFO] Worker exiting (pid: 573)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:23 +0000] [582] [INFO] Booting worker with pid: 582
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:24 +0000] [582] [INFO] Worker exiting (pid: 582)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:25 +0000] [591] [INFO] Booting worker with pid: 591
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_app            | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_app            | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_app            | --------------------------------------------------------------------------------
+superset_worker_beat    | Requirement already satisfied: Werkzeug>=2.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.2)
+superset_worker_beat    | Requirement already satisfied: click>=8.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (8.0.4)
+superset_worker_beat    | Requirement already satisfied: importlib-metadata>=3.6.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (6.8.0)
+superset_worker_beat    | Requirement already satisfied: pyasn1-modules>=0.0.5 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.4.0)
+superset_worker_beat    | Requirement already satisfied: httplib2>=0.9.1 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.22.0)
+superset_worker_beat    | Requirement already satisfied: rsa>=3.1.4 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.9)
+superset_worker_beat    | Requirement already satisfied: pyasn1>=0.1.7 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.6.0)
+superset_worker_beat    | Requirement already satisfied: pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2 in /usr/local/lib/python3.8/site-packages (from httplib2>=0.9.1->oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.6)
+superset_worker_beat    | Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.8/site-packages (from importlib-metadata>=3.6.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.16.2)
+superset_worker_beat    | Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.8/site-packages (from Jinja2>=3.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+superset_worker_beat    | WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+superset_worker_beat    | You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    |                                     WARNING
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_worker_beat    | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_worker_beat    | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | Refusing to start due to insecure SECRET_KEY
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | Installing local overrides at /app/docker/requirements-local.txt
+superset_worker_beat    | Requirement already satisfied: flask-oidc==1.3.0 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 1)) (1.3.0)
+superset_worker_beat    | Requirement already satisfied: psycopg2 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 2)) (2.9.9)
+superset_worker_beat    | Requirement already satisfied: Flask in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.3)
+superset_worker_beat    | Requirement already satisfied: six in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (1.16.0)
+superset_worker_beat    | Requirement already satisfied: itsdangerous in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | Requirement already satisfied: oauth2client in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.1.3)
+superset_worker_beat    | Requirement already satisfied: importlib-metadata>=3.6.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (6.8.0)
+superset_worker_beat    | Requirement already satisfied: Werkzeug>=2.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.2)
+superset_worker_beat    | Requirement already satisfied: click>=8.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (8.0.4)
+superset_worker_beat    | Requirement already satisfied: Jinja2>=3.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.3)
+superset_worker_beat    | Requirement already satisfied: rsa>=3.1.4 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.9)
+superset_worker_beat    | Requirement already satisfied: httplib2>=0.9.1 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.22.0)
+superset_worker_beat    | Requirement already satisfied: pyasn1-modules>=0.0.5 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.4.0)
+superset_worker_beat    | Requirement already satisfied: pyasn1>=0.1.7 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.6.0)
+superset_worker_beat    | Requirement already satisfied: pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2 in /usr/local/lib/python3.8/site-packages (from httplib2>=0.9.1->oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.6)
+superset_worker_beat    | Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.8/site-packages (from importlib-metadata>=3.6.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.16.2)
+superset_worker_beat    | Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.8/site-packages (from Jinja2>=3.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+superset_worker_beat    | WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+superset_worker_beat    | You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    |                                     WARNING
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_worker_beat    | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_worker_beat    | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | Refusing to start due to insecure SECRET_KEY
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | Installing local overrides at /app/docker/requirements-local.txt
+superset_worker_beat    | Requirement already satisfied: flask-oidc==1.3.0 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 1)) (1.3.0)
+superset_worker_beat    | Requirement already satisfied: psycopg2 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 2)) (2.9.9)
+superset_worker_beat    | Requirement already satisfied: Flask in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.3)
+superset_worker_beat    | Requirement already satisfied: itsdangerous in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | Requirement already satisfied: oauth2client in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.1.3)
+superset_worker_beat    | Requirement already satisfied: six in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (1.16.0)
+superset_worker_beat    | Requirement already satisfied: importlib-metadata>=3.6.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (6.8.0)
+superset_worker_beat    | Requirement already satisfied: Jinja2>=3.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.3)
+superset_worker_beat    | Requirement already satisfied: Werkzeug>=2.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.2)
+superset_worker_beat    | Requirement already satisfied: click>=8.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (8.0.4)
+superset_worker_beat    | Requirement already satisfied: rsa>=3.1.4 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.9)
+superset_worker_beat    | Requirement already satisfied: httplib2>=0.9.1 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.22.0)
+superset_worker_beat    | Requirement already satisfied: pyasn1>=0.1.7 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.6.0)
+superset_worker_beat    | Requirement already satisfied: pyasn1-modules>=0.0.5 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.4.0)
+superset_worker_beat    | Requirement already satisfied: pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2 in /usr/local/lib/python3.8/site-packages (from httplib2>=0.9.1->oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.6)
+superset_worker_beat    | Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.8/site-packages (from importlib-metadata>=3.6.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.16.2)
+superset_worker_beat    | Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.8/site-packages (from Jinja2>=3.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+superset_worker_beat    | WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+superset_worker_beat    | You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    |                                     WARNING
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | A Default SECRET_KEY was detected, please use superset_config.py to override it.
+superset_worker_beat    | Use a strong complex alphanumeric string and use a tool to help you generate 
+superset_worker_beat    | a sufficiently random sequence, ex: openssl rand -base64 42
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | --------------------------------------------------------------------------------
+superset_worker_beat    | Refusing to start due to insecure SECRET_KEY
+superset_worker_beat    | Installing local overrides at /app/docker/requirements-local.txt
+superset_worker_beat    | Requirement already satisfied: flask-oidc==1.3.0 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 1)) (1.3.0)
+superset_worker_beat    | Requirement already satisfied: psycopg2 in /usr/local/lib/python3.8/site-packages (from -r /app/docker/requirements-local.txt (line 2)) (2.9.9)
+superset_worker_beat    | Requirement already satisfied: oauth2client in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.1.3)
+superset_worker_beat    | Requirement already satisfied: Flask in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.3)
+superset_worker_beat    | Requirement already satisfied: itsdangerous in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | Requirement already satisfied: six in /usr/local/lib/python3.8/site-packages (from flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (1.16.0)
+superset_worker_beat    | Requirement already satisfied: importlib-metadata>=3.6.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (6.8.0)
+superset_worker_beat    | Requirement already satisfied: click>=8.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (8.0.4)
+superset_worker_beat    | Requirement already satisfied: Werkzeug>=2.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.2)
+superset_worker_beat    | Requirement already satisfied: Jinja2>=3.0 in /usr/local/lib/python3.8/site-packages (from Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.3)
+superset_worker_beat    | Requirement already satisfied: pyasn1>=0.1.7 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.6.0)
+superset_worker_beat    | Requirement already satisfied: pyasn1-modules>=0.0.5 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.4.0)
+superset_worker_beat    | Requirement already satisfied: httplib2>=0.9.1 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (0.22.0)
+superset_worker_beat    | Requirement already satisfied: rsa>=3.1.4 in /usr/local/lib/python3.8/site-packages (from oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (4.9)
+superset_worker_beat    | Requirement already satisfied: pyparsing!=3.0.0,!=3.0.1,!=3.0.2,!=3.0.3,<4,>=2.4.2 in /usr/local/lib/python3.8/site-packages (from httplib2>=0.9.1->oauth2client->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.0.6)
+superset_worker_beat    | Requirement already satisfied: zipp>=0.5 in /usr/local/lib/python3.8/site-packages (from importlib-metadata>=3.6.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (3.16.2)
+superset_worker_beat    | Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.8/site-packages (from Jinja2>=3.0->Flask->flask-oidc==1.3.0->-r /app/docker/requirements-local.txt (line 1)) (2.1.1)
+superset_worker_beat    | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+superset_worker_beat    | WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+superset_worker_beat    | You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+superset_worker_beat    | Starting Celery beat...
+superset_app            | --------------------------------------------------------------------------------
+superset_app            | Refusing to start due to insecure SECRET_KEY
+superset_app            | [2024-06-01 20:35:26 +0000] [591] [INFO] Worker exiting (pid: 591)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 20:35:26 +0000] [600] [INFO] Booting worker with pid: 600
+superset_app            | --------------------------------------------------------------------------------
+superset_app            |                                     WARNING
 
-version: "3.7"
-networks:
-  iopex_network:
-    external: true
-services:
-  redis:
-    image: redis:latest
-    container_name: superset_cache
-    restart: unless-stopped
-    volumes:
-      - ./redis:/data
-
-  db:
-    env_file: docker/.env-non-dev
-    image: postgres:10
-    container_name: superset_db
-    restart: unless-stopped
-    ports:
-     - 8005:5432
-    volumes:
-      - ./data:/var/lib/postgresql/data
-
-  superset:
-    env_file: docker/.env-non-dev
-    image: *superset-image
-    container_name: superset_app
-    command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
-    user: "root"
-    restart: unless-stopped
-    ports:
-     - 8003:8088
-    depends_on: *superset-depends-on
-    volumes: *superset-volumes
-    networks:
-     - iopex_network
-
-  superset-init:
-    image: *superset-image
-    container_name: superset_init
-    command: ["/app/docker/docker-init.sh"]
-    env_file: docker/.env-non-dev
-    depends_on: *superset-depends-on
-    user: "root"
-    volumes: *superset-volumes
-
-  superset-worker:
-    image: *superset-image
-    container_name: superset_worker
-    command: ["/app/docker/docker-bootstrap.sh", "worker"]
-    env_file: docker/.env-non-dev
-    restart: unless-stopped
-    depends_on: *superset-depends-on
-    user: "root"
-    volumes: *superset-volumes
-
-  superset-worker-beat:
-    image: *superset-image
-    container_name: superset_worker_beat
-    command: ["/app/docker/docker-bootstrap.sh", "beat"]
-    env_file: docker/.env-non-dev
-    restart: unless-stopped
-    depends_on: *superset-depends-on
-    user: "root"
-    volumes: *superset-volumes
-
-volumes:
-  superset_home:
-    external: false
-  db_home:
-    external: false
-  redis:
-    external: false
-
-
-
-balasubramaniyand@CHNIOPEXL5097:~/test/var/opt/superset$ sudo docker-compose up -d
-Pulling superset (iopexlabs/superset:1.2)...
-ERROR: The image for the service you're trying to recreate has been removed. If you continue, volume data could be lost. Consider backing up your data before continuing.
-
-Continue with the new image? [yN]y
-Pulling superset (iopexlabs/superset:1.2)...
-ERROR: pull access denied for iopexlabs/superset, repository does not exist or may require 'docker login': denied: requested access to the resource is denied
