@@ -1,0 +1,21 @@
+superset_app            | 2024-06-01 20:58:36,095:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 20:58:36,097:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 20:58:36,100:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 20:58:36,101:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) could not connect to server: Connection refused
+superset_app            | 	Is the server running on host "localhost" (127.0.0.1) and accepting
+superset_app            | 	TCP/IP connections on port 8005?
+superset_app            | could not connect to server: Cannot assign requested address
+superset_app            | 	Is the server running on host "localhost" (::1) and accepting
+superset_app            | 	TCP/IP connections on port 8005?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 20:58:36 +0000] [312] [INFO] Worker exiting (pid: 312)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+superset_worker_beat    | WARNING: You are using pip version 22.0.4; however, version 24.0 is available.
+superset_worker_beat    | You should consider upgrading via the '/usr/local/bin/python -m pip install --upgrade pip' command.
+superset_worker_beat    | Starting Celery beat...
+superset_app            | [2024-06-01 20:58:36 +0000] [321] [INFO] Booting worker with pid: 321
+^CERROR: Aborting.
