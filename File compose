@@ -1,8 +1,21 @@
+balasubramaniyand@CHNIOPEXL5097:~/superset/pythonpath$ ls
+client_secret.json  keycloack_securtiy_manager.py  __pycache__  superset_config.py
+balasubramaniyand@CHNIOPEXL5097:~/superset/pythonpath$ cd ..
+balasubramaniyand@CHNIOPEXL5097:~/superset$ cat docker-compose-image-tag.yml 
+x-superset-image: &superset-image iopexlabs/arlo_superset:1.2
+x-superset-depends-on: &superset-depends-on
+  - db
+  - redis
+x-superset-volumes: &superset-volumes
+  # /app/pythonpath_docker will be appended to the PYTHONPATH in the final container
+  - ./docker:/app/docker
+  - ./home:/app/superset_home
+  - ./pythonpath:/app/pythonpath
+
 version: "3.7"
 networks:
   iopex_network:
     external: true
-
 services:
   redis:
     image: redis:latest
@@ -10,8 +23,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./redis:/data
-    networks:
-      - iopex_network
 
   db:
     env_file: docker/.env-non-dev
@@ -19,80 +30,52 @@ services:
     container_name: superset_db
     restart: unless-stopped
     ports:
-      - 5432:5432
+     - 8005:5432
     volumes:
       - ./data:/var/lib/postgresql/data
-    networks:
-      - iopex_network
 
   superset:
     env_file: docker/.env-non-dev
-    image: iopexlabs/arlo_superset:1.2
+    image: *superset-image
     container_name: superset_app
     command: ["/app/docker/docker-bootstrap.sh", "app-gunicorn"]
     user: "root"
     restart: unless-stopped
     ports:
-      - 8003:8088
-    depends_on:
-      - db
-      - redis
-    volumes:
-      - ./docker:/app/docker
-      - ./home:/app/superset_home
-      - ./pythonpath:/app/pythonpath
+     - 8003:8088
+    depends_on: *superset-depends-on
+    volumes: *superset-volumes
     networks:
-      - iopex_network
+     - iopex_network
 
   superset-init:
-    image: iopexlabs/arlo_superset:1.2
+    image: *superset-image
     container_name: superset_init
     command: ["/app/docker/docker-init.sh"]
     env_file: docker/.env-non-dev
-    depends_on:
-      - db
-      - redis
+    depends_on: *superset-depends-on
     user: "root"
-    volumes:
-      - ./docker:/app/docker
-      - ./home:/app/superset_home
-      - ./pythonpath:/app/pythonpath
-    networks:
-      - iopex_network
+    volumes: *superset-volumes
 
   superset-worker:
-    image: iopexlabs/arlo_superset:1.2
+    image: *superset-image
     container_name: superset_worker
     command: ["/app/docker/docker-bootstrap.sh", "worker"]
     env_file: docker/.env-non-dev
     restart: unless-stopped
-    depends_on:
-      - db
-      - redis
+    depends_on: *superset-depends-on
     user: "root"
-    volumes:
-      - ./docker:/app/docker
-      - ./home:/app/superset_home
-      - ./pythonpath:/app/pythonpath
-    networks:
-      - iopex_network
+    volumes: *superset-volumes
 
   superset-worker-beat:
-    image: iopexlabs/arlo_superset:1.2
+    image: *superset-image
     container_name: superset_worker_beat
     command: ["/app/docker/docker-bootstrap.sh", "beat"]
     env_file: docker/.env-non-dev
     restart: unless-stopped
-    depends_on:
-      - db
-      - redis
+    depends_on: *superset-depends-on
     user: "root"
-    volumes:
-      - ./docker:/app/docker
-      - ./home:/app/superset_home
-      - ./pythonpath:/app/pythonpath
-    networks:
-      - iopex_network
+    volumes: *superset-volumes
 
 volumes:
   superset_home:
@@ -101,3 +84,395 @@ volumes:
     external: false
   redis:
     external: false
+balasubramaniyand@CHNIOPEXL5097:~/superset$ sudo  docker-compose -f docker-compose-image-tag.yml up -d
+Creating superset_cache ... done
+Creating superset_db    ... done
+Creating superset_worker      ... done
+Creating superset_worker_beat ... done
+Creating superset_app         ... done
+Creating superset_init        ... done
+balasubramaniyand@CHNIOPEXL5097:~/superset$ sudo  docker-compose -f docker-compose-image-tag.yml ps
+        Name                      Command                       State                            Ports                  
+------------------------------------------------------------------------------------------------------------------------
+superset_app           /app/docker/docker-bootstr ...   Up (health: starting)   0.0.0.0:8003->8088/tcp,:::8003->8088/tcp
+superset_cache         docker-entrypoint.sh redis ...   Up                      6379/tcp                                
+superset_db            docker-entrypoint.sh postgres    Up                      0.0.0.0:8005->5432/tcp,:::8005->5432/tcp
+superset_init          /app/docker/docker-init.sh       Exit 1                                                          
+superset_worker        /app/docker/docker-bootstr ...   Up (health: starting)   8088/tcp                                
+superset_worker_beat   /app/docker/docker-bootstr ...   Up (health: starting)   8088/tcp                                
+balasubramaniyand@CHNIOPEXL5097:~/superset$ sudo  docker-compose -f docker-compose-image-tag.yml logs
+Attaching to superset_app, superset_worker_beat, superset_init, superset_worker, superset_db, superset_cache
+db_1                    | 
+db_1                    | PostgreSQL Database directory appears to contain a database; Skipping initialization
+db_1                    | 
+db_1                    | 2024-06-01 19:28:39.595 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+db_1                    | 2024-06-01 19:28:39.595 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+db_1                    | 2024-06-01 19:28:39.597 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+db_1                    | 2024-06-01 19:28:39.614 UTC [27] LOG:  database system was shut down at 2024-06-01 18:34:45 UTC
+db_1                    | 2024-06-01 19:28:39.620 UTC [1] LOG:  database system is ready to accept connections
+superset_cache          | 1:C 01 Jun 2024 19:28:39.532 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+superset_cache          | 1:C 01 Jun 2024 19:28:39.532 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+superset_cache          | 1:C 01 Jun 2024 19:28:39.532 * Redis version=7.2.5, bits=64, commit=00000000, modified=0, pid=1, just started
+superset_cache          | 1:C 01 Jun 2024 19:28:39.532 # Warning: no config file specified, using the default config. In order to specify a config file use redis-server /path/to/redis.conf
+superset_cache          | 1:M 01 Jun 2024 19:28:39.532 * monotonic clock: POSIX clock_gettime
+superset_cache          | 1:M 01 Jun 2024 19:28:39.533 * Running mode=standalone, port=6379.
+superset_cache          | 1:M 01 Jun 2024 19:28:39.533 * Server initialized
+superset_cache          | 1:M 01 Jun 2024 19:28:39.533 * Loading RDB produced by version 7.2.5
+superset_cache          | 1:M 01 Jun 2024 19:28:39.533 * RDB age 3234 seconds
+superset_cache          | 1:M 01 Jun 2024 19:28:39.533 * RDB memory usage when created 0.83 Mb
+superset_cache          | 1:M 01 Jun 2024 19:28:39.533 * Done loading RDB, keys loaded: 0, keys expired: 0.
+superset_cache          | 1:M 01 Jun 2024 19:28:39.533 * DB loaded from disk: 0.000 seconds
+superset_cache          | 1:M 01 Jun 2024 19:28:39.533 * Ready to accept connections tcp
+superset_init           | Skipping local overrides
+superset_init           | Unknown Operation!!!
+superset_init           | 
+superset_init           | ######################################################################
+superset_init           | 
+superset_init           | 
+superset_init           | Init Step 1/4 [Starting] -- Applying DB migrations
+superset_init           | 
+superset_init           | 
+superset_init           | ######################################################################
+superset_init           | 
+superset_init           | logging was configured successfully
+superset_init           | 2024-06-01 19:28:42,641:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_init           | 2024-06-01 19:28:42,647:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_init           | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_init           | 2024-06-01 19:28:42,648:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_init           | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_init           | 2024-06-01 19:28:42,650:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_init           | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_init           | 2024-06-01 19:28:42,652:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_init           | 2024-06-01 19:28:42,653:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_init           | 	Is the server running on that host and accepting TCP/IP connections?
+superset_init           | 
+superset_init           | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_init           | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | Skipping local overrides
+superset_app            | Starting web app...
+superset_app            | [2024-06-01 19:28:40 +0000] [9] [INFO] Starting gunicorn 20.1.0
+superset_app            | [2024-06-01 19:28:40 +0000] [9] [INFO] Listening at: http://0.0.0.0:8088 (9)
+superset_app            | [2024-06-01 19:28:40 +0000] [9] [INFO] Using worker: gthread
+superset_app            | [2024-06-01 19:28:40 +0000] [11] [INFO] Booting worker with pid: 11
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:41,927:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:41,932:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:41,934:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:41,935:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:41,938:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:41,939:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:41 +0000] [11] [INFO] Worker exiting (pid: 11)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:42 +0000] [20] [INFO] Booting worker with pid: 20
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:43,472:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:43,476:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:43,477:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:43,479:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:43,481:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:43,482:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:43 +0000] [20] [INFO] Worker exiting (pid: 20)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:43 +0000] [29] [INFO] Booting worker with pid: 29
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:44,818:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:44,821:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:44,823:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:44,824:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:44,826:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:44,827:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:44 +0000] [29] [INFO] Worker exiting (pid: 29)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:45 +0000] [38] [INFO] Booting worker with pid: 38
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:46,415:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:46,419:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:46,420:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:46,421:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:46,423:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:46,425:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:46 +0000] [38] [INFO] Worker exiting (pid: 38)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:46 +0000] [47] [INFO] Booting worker with pid: 47
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:47,846:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:47,850:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:47,851:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:47,853:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:47,855:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:47,856:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:47 +0000] [47] [INFO] Worker exiting (pid: 47)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:48 +0000] [56] [INFO] Booting worker with pid: 56
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:49,339:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:49,348:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:49,351:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:49,354:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:49,358:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:49,360:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:49 +0000] [56] [INFO] Worker exiting (pid: 56)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:49 +0000] [65] [INFO] Booting worker with pid: 65
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:50,795:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:50,799:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:50,800:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:50,802:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:50,804:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:50,805:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:50 +0000] [65] [INFO] Worker exiting (pid: 65)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:51 +0000] [74] [INFO] Booting worker with pid: 74
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:52,323:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:52,326:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:52,327:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:52,330:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:52,333:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | Skipping local overrides
+superset_worker         | Starting Celery worker...
+superset_worker         | logging was configured successfully
+superset_worker         | 2024-06-01 19:28:41,828:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker         | 2024-06-01 19:28:41,830:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker         | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | 2024-06-01 19:28:41,832:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:41,834:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:41,836:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:41,837:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker         | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker         | 
+superset_worker         | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker         | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker         | Skipping local overrides
+superset_worker         | Starting Celery worker...
+superset_worker         | logging was configured successfully
+superset_worker         | 2024-06-01 19:28:46,609:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker         | 2024-06-01 19:28:46,610:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker         | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | 2024-06-01 19:28:46,612:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:46,614:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:46,616:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:46,617:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker         | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker         | 
+superset_worker         | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker         | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker         | Skipping local overrides
+superset_worker         | Starting Celery worker...
+superset_worker         | logging was configured successfully
+superset_worker         | 2024-06-01 19:28:49,246:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker         | 2024-06-01 19:28:49,247:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker         | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | 2024-06-01 19:28:49,249:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:49,251:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | Skipping local overrides
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:42,005:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:42,007:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker_beat    | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | 2024-06-01 19:28:42,008:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:42,010:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:42,013:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:42,014:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker_beat    | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker_beat    | 
+superset_worker_beat    | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | Skipping local overrides
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:46,642:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:46,644:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker_beat    | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | 2024-06-01 19:28:46,645:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:46,647:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:46,649:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:46,651:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker_beat    | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker_beat    | 
+superset_worker_beat    | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | Skipping local overrides
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:49,181:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:49,183:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker_beat    | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | 2024-06-01 19:28:49,185:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:49,187:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:49,253:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:49,254:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker         | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker         | 
+superset_worker         | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker         | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker         | Skipping local overrides
+superset_worker         | Starting Celery worker...
+superset_worker         | logging was configured successfully
+superset_worker         | 2024-06-01 19:28:51,822:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker         | 2024-06-01 19:28:51,825:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker         | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | 2024-06-01 19:28:51,827:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:51,829:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:51,832:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:51,833:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker         | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker         | 
+superset_worker         | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker         | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker         | Skipping local overrides
+superset_worker         | Starting Celery worker...
+superset_worker         | logging was configured successfully
+superset_worker         | 2024-06-01 19:28:54,785:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker         | 2024-06-01 19:28:54,786:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker         | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | 2024-06-01 19:28:54,788:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:54,790:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:54,792:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker         | 2024-06-01 19:28:54,793:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker         | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker         | 
+superset_worker         | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker         | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | 2024-06-01 19:28:52,334:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:52 +0000] [74] [INFO] Worker exiting (pid: 74)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:52 +0000] [83] [INFO] Booting worker with pid: 83
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:53,670:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:53,674:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:53,675:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:53,677:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:53,679:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:53,680:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:53 +0000] [83] [INFO] Worker exiting (pid: 83)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:53 +0000] [92] [INFO] Booting worker with pid: 92
+superset_app            | logging was configured successfully
+superset_app            | 2024-06-01 19:28:55,177:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_app            | 2024-06-01 19:28:55,184:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_app            | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | 2024-06-01 19:28:55,186:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:55,189:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:55,192:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_app            | 2024-06-01 19:28:55,193:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_app            | 	Is the server running on that host and accepting TCP/IP connections?
+superset_app            | 
+superset_app            | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_app            | [2024-06-01 19:28:55 +0000] [92] [INFO] Worker exiting (pid: 92)
+superset_app            | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_app            | [2024-06-01 19:28:55 +0000] [101] [INFO] Booting worker with pid: 101
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:49,189:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:49,191:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker_beat    | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker_beat    | 
+superset_worker_beat    | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | Skipping local overrides
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:51,725:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:51,727:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker_beat    | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | 2024-06-01 19:28:51,729:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:51,731:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:51,735:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:51,736:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker_beat    | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker_beat    | 
+superset_worker_beat    | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+superset_worker_beat    | Skipping local overrides
+superset_worker_beat    | Starting Celery beat...
+superset_worker_beat    | logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:54,733:INFO:superset.utils.logging_configurator:logging was configured successfully
+superset_worker_beat    | 2024-06-01 19:28:54,735:INFO:root:Configured event logger of type <class 'superset.utils.log.DBEventLogger'>
+superset_worker_beat    | We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | 2024-06-01 19:28:54,737:WARNING:superset.initialization:We haven't found any Content Security Policy (CSP) defined in the configurations. Please make sure to configure CSP using the TALISMAN_ENABLED and TALISMAN_CONFIG keys or any other external software. Failing to configure CSP have serious security implications. Check https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP for more information. You can disable this warning using the CONTENT_SECURITY_POLICY_WARNING key.
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:54,739:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `FILTER_STATE_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:54,741:WARNING:superset.utils.cache_manager:Falling back to the built-in cache, that stores data in the metadata database, for the following cache: `EXPLORE_FORM_DATA_CACHE_CONFIG`. It is recommended to use `RedisCache`, `MemcachedCache` or another dedicated caching backend for production deployments
+superset_worker_beat    | 2024-06-01 19:28:54,743:ERROR:flask_appbuilder.security.sqla.manager:DB Creation and initialization failed: (psycopg2.OperationalError) connection to server at "0.0.0.0", port 8005 failed: Connection refused
+superset_worker_beat    | 	Is the server running on that host and accepting TCP/IP connections?
+superset_worker_beat    | 
+superset_worker_beat    | (Background on this error at: https://sqlalche.me/e/14/e3q8)
+superset_worker_beat    | Loaded your LOCAL configuration at [/app/pythonpath/superset_config.py]
+balasubramaniyand@CHNIOPEXL5097:~/superset$ 
+
