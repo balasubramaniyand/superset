@@ -1,0 +1,32 @@
+superset_worker         |   File "/usr/local/lib/python3.10/site-packages/selenium/webdriver/common/service.py", line 81, in start
+superset_worker         |     raise WebDriverException(
+superset_worker         | selenium.common.exceptions.WebDriverException: Message: 'chromedriver' executable needs to be in PATH. Please see https://sites.google.com/a/chromium.org/chromedriver/home
+superset_worker         | 
+superset_worker         | 
+superset_worker         | The above exception was the direct cause of the following exception:
+superset_worker         | 
+superset_worker         | Traceback (most recent call last):
+superset_worker         |   File "/app/superset/tasks/scheduler.py", line 98, in execute
+superset_worker         |     ).run()
+superset_worker         |   File "/app/superset/commands/report/execute.py", line 729, in run
+superset_worker         |     raise ex
+superset_worker         |   File "/app/superset/commands/report/execute.py", line 727, in run
+superset_worker         |     ).run()
+superset_worker         |   File "/app/superset/commands/report/execute.py", line 689, in run
+superset_worker         |     ).next()
+superset_worker         |   File "/app/superset/commands/report/execute.py", line 586, in next
+superset_worker         |     raise first_ex
+superset_worker         |   File "/app/superset/commands/report/execute.py", line 555, in next
+superset_worker         |     self.send()
+superset_worker         |   File "/app/superset/commands/report/execute.py", line 452, in send
+superset_worker         |     notification_content = self._get_notification_content()
+superset_worker         |   File "/app/superset/commands/report/execute.py", line 357, in _get_notification_content
+superset_worker         |     screenshot_data = self._get_screenshots()
+superset_worker         |   File "/app/superset/commands/report/execute.py", line 236, in _get_screenshots
+superset_worker         |     raise ReportScheduleScreenshotFailedError(
+superset_worker         | superset.commands.report.exceptions.ReportScheduleScreenshotFailedError: Failed taking a screenshot Message: 'chromedriver' executable needs to be in PATH. Please see https://sites.google.com/a/chromium.org/chromedriver/home
+superset_worker         | 
+superset_worker         | [2024-06-02 08:01:00,120: INFO/ForkPoolWorker-1] Task reports.execute[87507fcf-03ac-45e3-a668-4cecf2ccb575] succeeded in 0.0723817560065072s: None
+^CERROR: Aborting.
+balasubramaniyand@CHNIOPEXL5097:~/gmail/superset$ 
+
