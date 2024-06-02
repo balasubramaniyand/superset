@@ -1,3 +1,29 @@
 /home/balasubramaniyand/gmail/superset/docker/pythonpath_dev
 
 how to mesion the docker
+Digest: sha256:7208d630cf38910c1146c31c10515c4f3f79ea44d8d6962570aac8f1c7b5548f
+Status: Downloaded newer image for apachesuperset.docker.scarf.sh/apache/superset:latest
+Creating superset_cache ... done
+Creating superset_db    ... done
+Creating superset_app         ... error
+Creating superset_worker ... 
+Creating superset_worker_beat ... 
+Creating superset_init        ... 
+Creating superset_worker_beat ... error
+ERROR: for superset_app  Cannot create container for service superset: invalid mode: /app/pythonpath
+
+Creating superset_worker      ... error
+
+ERROR: for superset_init  Cannot create container for service superset-init: invalid mode: /app/pythonpath
+
+ERROR: for superset_worker  Cannot create container for service superset-worker: invalid mode: /app/pythonpath
+
+ERROR: for superset  Cannot create container for service superset: invalid mode: /app/pythonpath
+
+ERROR: for superset-worker-beat  Cannot create container for service superset-worker-beat: invalid mode: /app/pythonpath
+
+ERROR: for superset-init  Cannot create container for service superset-init: invalid mode: /app/pythonpath
+
+ERROR: for superset-worker  Cannot create container for service superset-worker: invalid mode: /app/pythonpath
+ERROR: Encountered errors while bringing up the project.
+balasubramaniyand@CHNIOPEXL5097:~/gmail/superset$ 
