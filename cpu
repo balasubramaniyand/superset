@@ -1,2 +1,13 @@
-456301 root      20   0  807072 223836  59504 R  99.3   0.3   0:06.24 celery                                                      
-2895520 root      20   0       0      0      0 S   5.0   0.0 94
+root@opexwise-dev2:~# ps aux | grep celery
+root     3440331  0.1  0.3 809440 225020 ?       Sl   05:29   0:06 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app beat --pidfile /tmp/celerybeat.pid -l INFO -s /app/superset_home/celerybeat-schedule
+root     3441267  0.5  0.3 776916 226632 ?       Sl   05:31   0:22 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3441287  0.0  0.2 777864 173484 ?       S    05:31   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3441288  0.0  0.2 777868 173600 ?       S    05:31   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3441289  0.0  0.2 778128 173620 ?       S    05:31   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3441290  0.0  0.2 778132 173628 ?       S    05:31   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3441291  0.0  0.2 778136 173628 ?       S    05:31   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3441292  0.0  0.2 778140 173632 ?       S    05:31   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3441293  0.0  0.2 779596 177540 ?       S    05:31   0:02 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3441294  0.0  0.2 778148 173640 ?       S    05:31   0:00 /usr/local/bin/python /usr/local/bin/celery --app=superset.tasks.celery_app:app worker -O fair -l INFO
+root     3458083  0.0  0.0   6432  2592 pts/2    S+   06:38   0:00 grep --color=auto celery
+root@opexwise-dev2:~# 
