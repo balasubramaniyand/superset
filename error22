@@ -1,0 +1,123 @@
+Attaching to superset_app, superset_init, superset_worker, superset_worker_beat, superset_db, superset_cache
+superset_app            | Skipping local overrides
+superset_app            | Starting web app...
+superset_app            | [2024-06-02 07:52:48 +0000] [8] [INFO] Starting gunicorn 21.2.0
+superset_app            | [2024-06-02 07:52:48 +0000] [8] [INFO] Listening at: http://0.0.0.0:8088 (8)
+superset_app            | [2024-06-02 07:52:48 +0000] [8] [INFO] Using worker: gthread
+superset_app            | [2024-06-02 07:52:48 +0000] [9] [INFO] Booting worker with pid: 9
+superset_app            | Found but failed to import local superset_config
+superset_app            | Traceback (most recent call last):
+superset_app            |   File "/app/superset/config.py", line 1712, in <module>
+superset_app            |     import superset_config
+superset_app            |   File "/app/docker/pythonpath_dev/superset_config.py", line 92
+superset_app            |     ]```
+superset_app            |      ^
+superset_app            | SyntaxError: invalid syntax
+superset_app            | Failed to create app
+superset_app            | Traceback (most recent call last):
+superset_app            |   File "/app/superset/app.py", line 37, in create_app
+superset_app            |     app.config.from_object(config_module)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/flask/config.py", line 227, in from_object
+superset_app            |     obj = import_string(obj)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/werkzeug/utils.py", line 599, in import_string
+superset_app            |     __import__(import_name)
+superset_app            |   File "/app/superset/config.py", line 1712, in <module>
+superset_app            |     import superset_config
+superset_app            |   File "/app/docker/pythonpath_dev/superset_config.py", line 92
+superset_app            |     ]```
+superset_app            |      ^
+superset_app            | SyntaxError: invalid syntax
+superset_app            | [2024-06-02 07:52:50 +0000] [9] [ERROR] Exception in worker process
+superset_app            | Traceback (most recent call last):
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/arbiter.py", line 609, in spawn_worker
+superset_app            |     worker.init_process()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/workers/gthread.py", line 95, in init_process
+superset_app            |     super().init_process()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/workers/base.py", line 134, in init_process
+superset_app            |     self.load_wsgi()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/workers/base.py", line 146, in load_wsgi
+superset_app            |     self.wsgi = self.app.wsgi()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/app/base.py", line 67, in wsgi
+superset_app            |     self.callable = self.load()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 58, in load
+superset_app            |     return self.load_wsgiapp()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 48, in load_wsgiapp
+superset_app            |     return util.import_app(self.app_uri)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/util.py", line 424, in import_app
+superset_app            |     app = app(*args, **kwargs)
+superset_app            |   File "/app/superset/app.py", line 47, in create_app
+superset_app            |     raise ex
+superset_app            |   File "/app/superset/app.py", line 37, in create_app
+superset_app            |     app.config.from_object(config_module)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/flask/config.py", line 227, in from_object
+superset_app            |     obj = import_string(obj)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/werkzeug/utils.py", line 599, in import_string
+superset_app            |     __import__(import_name)
+superset_app            |   File "/app/superset/config.py", line 1712, in <module>
+superset_app            |     import superset_config
+superset_app            |   File "/app/docker/pythonpath_dev/superset_config.py", line 92
+superset_app            |     ]```
+superset_app            |      ^
+superset_app            | SyntaxError: invalid syntax
+superset_app            | [2024-06-02 07:52:50 +0000] [9] [INFO] Worker exiting (pid: 9)
+superset_app            | [2024-06-02 07:52:50 +0000] [8] [ERROR] Worker (pid:9) exited with code 3
+superset_app            | [2024-06-02 07:52:50 +0000] [8] [ERROR] Shutting down: Master
+superset_app            | [2024-06-02 07:52:50 +0000] [8] [ERROR] Reason: Worker failed to boot.
+superset_app            | Skipping local overrides
+superset_app            | Starting web app...
+superset_app            | [2024-06-02 07:52:51 +0000] [8] [INFO] Starting gunicorn 21.2.0
+superset_app            | [2024-06-02 07:52:51 +0000] [8] [INFO] Listening at: http://0.0.0.0:8088 (8)
+superset_app            | [2024-06-02 07:52:51 +0000] [8] [INFO] Using worker: gthread
+superset_app            | [2024-06-02 07:52:51 +0000] [9] [INFO] Booting worker with pid: 9
+superset_app            | Found but failed to import local superset_config
+superset_app            | Traceback (most recent call last):
+superset_app            |   File "/app/superset/config.py", line 1712, in <module>
+superset_app            |     import superset_config
+superset_app            |   File "/app/docker/pythonpath_dev/superset_config.py", line 92
+superset_app            |     ]```
+superset_app            |      ^
+superset_app            | SyntaxError: invalid syntax
+superset_app            | Failed to create app
+superset_app            | Traceback (most recent call last):
+superset_app            |   File "/app/superset/app.py", line 37, in create_app
+superset_app            |     app.config.from_object(config_module)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/flask/config.py", line 227, in from_object
+superset_app            |     obj = import_string(obj)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/werkzeug/utils.py", line 599, in import_string
+superset_app            |     __import__(import_name)
+superset_app            |   File "/app/superset/config.py", line 1712, in <module>
+superset_app            |     import superset_config
+superset_app            |   File "/app/docker/pythonpath_dev/superset_config.py", line 92
+superset_app            |     ]```
+superset_app            |      ^
+superset_app            | SyntaxError: invalid syntax
+superset_app            | [2024-06-02 07:52:53 +0000] [9] [ERROR] Exception in worker process
+superset_app            | Traceback (most recent call last):
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/arbiter.py", line 609, in spawn_worker
+superset_app            |     worker.init_process()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/workers/gthread.py", line 95, in init_process
+superset_app            |     super().init_process()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/workers/base.py", line 134, in init_process
+superset_app            |     self.load_wsgi()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/workers/base.py", line 146, in load_wsgi
+superset_app            |     self.wsgi = self.app.wsgi()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/app/base.py", line 67, in wsgi
+superset_app            |     self.callable = self.load()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 58, in load
+superset_app            |     return self.load_wsgiapp()
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/app/wsgiapp.py", line 48, in load_wsgiapp
+superset_app            |     return util.import_app(self.app_uri)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/gunicorn/util.py", line 424, in import_app
+superset_app            |     app = app(*args, **kwargs)
+superset_app            |   File "/app/superset/app.py", line 47, in create_app
+superset_app            |     raise ex
+superset_app            |   File "/app/superset/app.py", line 37, in create_app
+superset_app            |     app.config.from_object(config_module)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/flask/config.py", line 227, in from_object
+superset_app            |     obj = import_string(obj)
+superset_app            |   File "/usr/local/lib/python3.10/site-packages/werkzeug/utils.py", line 599, in import_string
+superset_app            |     __import__(import_name)
+superset_app            |   File "/app/superset/config.py", line 1712, in <module>
+superset_app            |     import superset_config
+superset_app            |   File "/app/docker/pythonpath_dev/superset_config.py", line 92
+superset_app            |     ]```
