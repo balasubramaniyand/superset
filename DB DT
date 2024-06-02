@@ -1,29 +1,6 @@
-
-# database configurations (do not modify)
-DATABASE_DB=superset
-DATABASE_HOST=db
-DATABASE_PASSWORD=superset
-DATABASE_USER=superset
-
-# database engine specific environment variables
-# change the below if you prefers another database engine
-DATABASE_PORT=5432
-DATABASE_DIALECT=postgresql
-POSTGRES_DB=superset
-POSTGRES_USER=superset
-POSTGRES_PASSWORD=superset
-#MYSQL_DATABASE=superset
-#MYSQL_USER=superset
-#MYSQL_PASSWORD=superset
-#MYSQL_RANDOM_ROOT_PASSWORD=yes
-
-# Add the mapped in /app/pythonpath_docker which allows devs to override stuff
-PYTHONPATH=/app/pythonpath:/app/docker/pythonpath_dev
-REDIS_HOST=redis
-REDIS_PORT=6379
-
-FLASK_ENV=production
-SUPERSET_ENV=production
-SUPERSET_LOAD_EXAMPLES=yes
-CYPRESS_CONFIG=false
-SUPERSET_PORT=8088
+RROR: The Compose file './docker-compose-image-tag.yml' is invalid because:
+services.db.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-init.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-worker.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
+services.superset-worker-beat.env_file contains {"path": "docker/.env", "required": true}, which is an invalid type, it should be a string
