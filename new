@@ -1,0 +1,31 @@
+Found but failed to import local superset_config
+Traceback (most recent call last):
+  File "/app/superset/config.py", line 1712, in <module>
+    import superset_config
+  File "/app/docker/pythonpath_dev/superset_config.py", line 3, in <module>
+    from flask_caching import FileSystemCache
+ImportError: cannot import name 'FileSystemCache' from 'flask_caching' (/usr/local/lib/python3.10/site-packages/flask_caching/__init__.py)
+Traceback (most recent call last):
+  File "/usr/local/bin/superset", line 33, in <module>
+    sys.exit(load_entry_point('apache-superset', 'console_scripts', 'superset')())
+  File "/usr/local/bin/superset", line 25, in importlib_load_entry_point
+    return next(matches).load()
+  File "/usr/local/lib/python3.10/importlib/metadata/__init__.py", line 171, in load
+    module = import_module(match.group('module'))
+  File "/usr/local/lib/python3.10/importlib/__init__.py", line 126, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1050, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1027, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1006, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 688, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 883, in exec_module
+  File "<frozen importlib._bootstrap>", line 241, in _call_with_frames_removed
+  File "/app/superset/cli/main.py", line 28, in <module>
+    from superset.cli.lib import normalize_token
+  File "/app/superset/cli/lib.py", line 20, in <module>
+    from superset import config
+  File "/app/superset/config.py", line 1712, in <module>
+    import superset_config
+  File "/app/docker/pythonpath_dev/superset_config.py", line 3, in <module>
+    from flask_caching import FileSystemCache
+ImportError: cannot import name 'FileSystemCache' from 'flask_caching' (/usr/local/lib/python3.10/site-packages/flask_caching/__init__.py)
